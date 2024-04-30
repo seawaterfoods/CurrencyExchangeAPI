@@ -1,1 +1,5 @@
-spring.application.name=CurrencyExchangeAPI
+spring:
+  application:
+    name: CurrencyExchangeAPI
+server:
+  port: 8080

@@ -1,31 +1,25 @@
-FROM maven:3.8.6-openjdk-11 AS builder
+FROM maven:3.8.3-openjdk-17 AS builder
 
-WORKDIR /tmp
+WORKDIR /build
 
-COPY ./pom_local.xml ./pom.xml
-
+# Copy pom.xml first to leverage Docker layer caching
+COPY pom.xml .
 RUN mvn dependency:go-offline
 
-COPY ./src ./src
+# Copy the rest of the source code
+COPY src ./src
 
-RUN mvn package -Plocal
+# Build the application
+RUN mvn package
 
-COPY ./manifests ./manifests
-
-
-
-FROM openjdk:11.0
+FROM openjdk:17
 
 ENV TZ=Asia/Hong_Kong
 
-RUN addgroup --system spring && adduser --system --group spring
-USER spring:spring
+WORKDIR /app
 
-WORKDIR /tmp
+# Copy the JAR file from the builder stage
+COPY --from=builder /build/target/*.jar app.jar
 
-ARG JAR_FILE=/tmp/target/*.jar
-ARG CREDENTIAL_FILE=/tmp/manifests/deploy/local/credential.yaml
-COPY --from=builder ${JAR_FILE} hktv-ty-mwms.jar
-COPY --from=builder ${CREDENTIAL_FILE} credential.yaml
-
-ENTRYPOINT exec java $JAVA_OPTS -jar ./hktv-ty-mwms.jar
+# Set the entry point
+ENTRYPOINT ["java", "-jar", "app.jar"]
