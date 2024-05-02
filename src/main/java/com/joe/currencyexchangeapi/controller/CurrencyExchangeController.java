@@ -31,7 +31,7 @@ public class CurrencyExchangeController {
         Map<String, Object> response = new HashMap<>();
 
         // 檢查amount是否可以正常轉換成數字
-        if (isValidAmount(amount)) {
+        if (!isValidAmount(amount)) {
             //回傳錯誤response
             String message = "failed, Unsupported amount conversion, plz request number thx. amount: %s";
             String formattedMessage = String.format(message, amount);

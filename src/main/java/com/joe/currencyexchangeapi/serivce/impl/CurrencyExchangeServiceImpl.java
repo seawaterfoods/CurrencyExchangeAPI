@@ -27,7 +27,8 @@ public class CurrencyExchangeServiceImpl implements CurrencyExchangeService {
         // 取得匯率並進行轉換
         Map<String, Map<String, String>> currencies = exchangeRatesConfig.getCurrencies();
 
-        BigDecimal exchangeRate = BigDecimal.valueOf(Long.parseLong(currencies.get(sourceCurrency).get(targetCurrency)));
+// 將匯率字串轉換為 BigDecimal
+        BigDecimal exchangeRate = new BigDecimal(currencies.get(sourceCurrency).get(targetCurrency));
         BigDecimal currencyExchangeAmount = amount.multiply(exchangeRate);
 
         // 四捨五入到小數點第二位
